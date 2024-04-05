@@ -7,8 +7,8 @@ int iniciar_servidor(void)
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
 	assert(!"no implementado!");
 
-	int socket_servidor;
-
+	int socket_servidor_fd;
+	int err;
 	struct addrinfo hints, *servinfo, *p;
 
 	memset(&hints, 0, sizeof(hints));
@@ -16,18 +16,30 @@ int iniciar_servidor(void)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+	err = getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+	if(err != 0)
+	{
+		printf("error en funcion getaddrinfo()\n");
+		exit(3);
+	}
 
 	// Creamos el socket de escucha del servidor
+	socket_servidor_fd = socket(servinfo->ai_family,
+							 servinfo->ai_socktype,
+							 servinfo->ai_protocol);
 
 	// Asociamos el socket a un puerto
+// ===================================
+// estoy acá
+// ===================================
+	err = bind(socket_servidor_fd, servinfo->ai_addr, servinfo->ai_addrlen);
 
 	// Escuchamos las conexiones entrantes
 
 	freeaddrinfo(servinfo);
 	log_trace(logger, "Listo para escuchar a mi cliente");
 
-	return socket_servidor;
+	return socket_servidor_fd;
 }
 
 int esperar_cliente(int socket_servidor)
