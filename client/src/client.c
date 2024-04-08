@@ -4,7 +4,7 @@ int main(void)
 {
 	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
 
-	int conexion = 1;
+	int conexion_fd = 1;
 	char* ip;
 	char* puerto;
 	char* valor;
@@ -38,20 +38,20 @@ int main(void)
 	leer_consola(logger);
 
 	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
-// ======================================================
-// aca ESTOY
-// ======================================================
 	// ADVERTENCIA: Antes de continuar, tenemos que asegurarnos que el servidor esté corriendo para poder conectarnos a él
 
 	// Creamos una conexión hacia el servidor
-//	conexion = crear_conexion(ip, puerto);
+	conexion_fd = crear_conexion(ip, puerto);
 
+// ======================================================
+// aca ESTOY
+// ======================================================
 	// Enviamos al servidor el valor de CLAVE como mensaje
 
 	// Armamos y enviamos el paquete
-	paquete(conexion);
+	paquete(conexion_fd);
 
-	terminar_programa(conexion, logger, config);
+	terminar_programa(conexion_fd, logger, config);
 
 	/*---------------------------------------------------PARTE 5-------------------------------------------------------------*/
 	// Proximamente

@@ -4,37 +4,47 @@ t_log* logger;
 
 int iniciar_servidor(void)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
-
-	int socket_servidor_fd;
-	int err;
-	struct addrinfo hints, *servinfo, *p;
+	struct addrinfo hints;
+	struct addrinfo *servinfo;
+	struct addrinfo *p;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	err = getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+	int err = getaddrinfo(NULL, PUERTO, &hints, &servinfo);
 	if(err != 0)
 	{
-		printf("error en funcion getaddrinfo()\n");
+		log_error(logger, "error en funcion getaddrinfo()\n");
 		exit(3);
 	}
 
 	// Creamos el socket de escucha del servidor
-	socket_servidor_fd = socket(servinfo->ai_family,
-							 servinfo->ai_socktype,
-							 servinfo->ai_protocol);
+	int socket_servidor_fd = socket(servinfo->ai_family,
+									 servinfo->ai_socktype,
+									 servinfo->ai_protocol);
+	if(socket_servidor_fd == -1)
+	{
+		log_error(logger, "error en funcion socket()\n");
+		exit(3);
+	}
 
 	// Asociamos el socket a un puerto
-// ===================================
-// estoy acá
-// ===================================
 	err = bind(socket_servidor_fd, servinfo->ai_addr, servinfo->ai_addrlen);
+	if(err != 0)
+	{
+		log_error(logger, "error en funcion bind()\n");
+		exit(3);
+	}
 
 	// Escuchamos las conexiones entrantes
+	err = listen(socket_servidor_fd, SOMAXCONN);
+	if(err != 0)
+	{
+		log_error(logger, "error en funcion listen()\n");
+		exit(3);
+	}
 
 	freeaddrinfo(servinfo);
 	log_trace(logger, "Listo para escuchar a mi cliente");
@@ -42,16 +52,19 @@ int iniciar_servidor(void)
 	return socket_servidor_fd;
 }
 
-int esperar_cliente(int socket_servidor)
+int esperar_cliente(int socket_servidor_fd)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
-
 	// Aceptamos un nuevo cliente
-	int socket_cliente;
+	int socket_cliente_fd = accept(socket_servidor_fd, NULL, NULL);
+	if(socket_cliente_fd == -1)
+	{
+		log_error(logger, "error en funcion accept()\n");
+		exit(3);
+	}
+
 	log_info(logger, "Se conecto un cliente!");
 
-	return socket_cliente;
+	return socket_cliente_fd;
 }
 
 int recibir_operacion(int socket_cliente)
