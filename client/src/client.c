@@ -47,6 +47,7 @@ int main(void)
 // aca ESTOY
 // ======================================================
 	// Enviamos al servidor el valor de CLAVE como mensaje
+	enviar_mensaje(valor, conexion_fd);
 
 	// Armamos y enviamos el paquete
 	paquete(conexion_fd);
@@ -118,23 +119,41 @@ void leer_consola(t_log* logger)
 	log_trace(logger, "finaliza lectura de consola");
 }
 
-void paquete(int conexion)
+void paquete(int socket_conexion_fd)
 {
 	// Ahora toca lo divertido!
 	char* leido;
-	t_paquete* paquete;
+	t_paquete* paquete = crear_paquete();
 
 	// Leemos y esta vez agregamos las lineas al paquete
+	leido = readline("> ");
+	while (!string_is_empty(leido))
+	{
+		int tamanio_leido = strlen(leido) + 1;
+		agregar_a_paquete(paquete, leido, tamanio_leido);
 
+		free(leido);
+
+		leido = readline("> ");
+	}
+
+	enviar_paquete(paquete, socket_conexion_fd);
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
-	
+	free(leido);
+	eliminar_paquete(paquete);
 }
 
-void terminar_programa(int conexion, t_log* logger, t_config* config)
+void terminar_programa(int socket_conexion_fd, t_log* logger, t_config* config)
 {
 	/* Y por ultimo, hay que liberar lo que utilizamos (conexion, log y config) 
 	  con las funciones de las commons y del TP mencionadas en el enunciado */
+	int err = close(socket_conexion_fd);
+	if(err != 0)
+	{
+		log_error(logger, "error en funcion close()\n");
+		exit(3);
+	}
 	log_destroy(logger);
 	config_destroy(config);
 }
