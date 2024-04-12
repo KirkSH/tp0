@@ -79,7 +79,7 @@ t_log* iniciar_logger(void)
 
 t_config* iniciar_config_cliente(t_log* logger)
 {
-	t_config* nuevo_config = config_create("/home/utnso/recursosSO/tp0/clientcliente.config");
+	t_config* nuevo_config = config_create("/home/utnso/recursosSO/tp0/client/cliente.config");
 	// Le puse hardcodeada la ruta del config según mi VM ubuntu server.
 
 	if (nuevo_config == NULL)
